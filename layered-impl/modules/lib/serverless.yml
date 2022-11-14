@@ -1,0 +1,26 @@
+#
+# Layer: module-libs
+#
+service: module-libs-nodex-1589
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+
+layers:
+  libs:
+    path: './'
+    name: ${self:service}-${self:provider.stage}
+    description: Libraries layer
+    compatibleRuntimes:
+      - nodejs12.x
+    retain: true
+
+custom:
+  package: &package
+    ${file(../serverless-package.yml)}
+
+package:
+  exclude: ${self:custom.package.${self:provider.stage}.exclude}

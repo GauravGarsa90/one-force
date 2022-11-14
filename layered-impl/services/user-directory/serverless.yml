@@ -1,0 +1,45 @@
+service: s3-uploader
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  role: userDirectoryServiceDefaultRole
+  region: ${opt:region, 'ap-southeast-1'}
+  environment:
+    ALLOWED_ORIGINS: '.*'
+
+custom:
+  environment:
+    USER_DIRECTORY_TABLE: ggrasa-user-directory-table
+  cors: &cors
+    ${file(../serverless-cors.yml)}
+  layers: &layers
+    ${file(../serverless-layers.yml)}
+  resources: &resources
+    ${file(./serverless-resources.yml)}
+
+functions:
+  upload:
+    handler: handler.upload
+    role: userDirectoryServiceWriteRole
+    events:
+      - http:
+          path: api/${self:service}/
+          method: post
+          cors: ${self:custom.cors.${self:provider.stage}}
+          private: false
+    layers:
+      -  ${self:custom.layers.${self:provider.stage}.libs}
+  ingest:
+    handler: ingest.ingest
+    role: userDirectoryServiceReadRole
+    events:
+      - s3:
+          bucket: ${self:custom.environment.DATA_BUCKET}
+          event: s3:ObjectCreated:*
+    layers:
+      -  ${self:custom.layers.${self:provider.stage}.libs}
+
+resources:
+  ${self:custom.resources.${self:provider.stage}.resources}

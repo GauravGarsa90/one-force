@@ -1,0 +1,17 @@
+
+service: s3-uploader-resources
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+
+custom:
+  environment: &environment
+    default: &defaultEnvironment
+      USER_DIRECTORY_TABLE: ggrasa-user-directory-table
+  resources: &resources
+    ${file(./serverless-resources.yml)}
+
+resources:
+  ${self:custom.resources.${self:provider.stage}.resources}

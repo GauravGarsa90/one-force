@@ -1,0 +1,15 @@
+{
+  "name": "module-libs",
+  "version": "1.0.9-1589",
+  "description": "libs module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm pack ../../../lib/db | tail -1 && mv *.tgz ../../../packages/db/."
+  },
+  "author": "Gaurav",
+  "license": "ISC",
+  "dependencies": {
+    "db": "file:../../../packages/db/db-1.0.1.tgz"
+  }
+}

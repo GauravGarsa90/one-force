@@ -1,0 +1,13 @@
+{
+  "author": "Gaurav",
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Common DB objects",
+  "license": "ISC",
+  "main": "db.js",
+  "name": "db",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.1"
+}

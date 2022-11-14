@@ -1,0 +1,29 @@
+#
+# Package
+#
+default: &default
+  exclude:
+    - '**/*~'
+    - '**/#*#'
+    - '**/.#*'
+    - '**/*.swp'
+    - '**/.npm*'
+    - '**/*.md'
+    - '**/*.tgz'
+    - '**/serverless*'
+    - '**/sharp/**'
+    - '**/converters/bin/**'
+    - '**/converters/lib/**'
+    - '**/converters/.fonts/**'
+    - '**/phantomjs-prebuilt/lib/phantom/bin/**'
+    - '**/aws-sdk/**'
+    - '**/intl/locale-data/**'
+    - '**/intl/dist/**'
+    - '**/web/**'
+    - '**/layers/**'
+    - 'resources/**'
+    - 'policies/**'
+    - 'prices/**'
+    - 'ingestions/**'
+    - 'preferences/**'
+    - 'packages/**'

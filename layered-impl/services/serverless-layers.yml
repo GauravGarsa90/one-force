@@ -1,0 +1,5 @@
+#
+# Layers
+#
+default: &defaultLayers
+  libs: ${cf:module-libs-nodex-1589-${self:provider.stage}.LibsLambdaLayerQualifiedArn}

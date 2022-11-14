@@ -1,0 +1,39 @@
+#
+# Resources: flight-resources
+#
+default: &default
+
+  dynamoDbTables: &defaultTables
+    userDirectory:
+      Type: AWS::DynamoDB::Table
+        Properties:
+        TableName: ${self:custom.environment.${self:provider.stage}.USER_DIRECTORY_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+          - AttributeName: firstName
+            AttributeType: S
+          - AttributeName: lastName
+            AttributeType: S
+          - AttributeName: gender
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+          - AttributeName: ipAddress
+            AttributeType: S
+          - AttributeName: dateJoined
+            AttributeType: N
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: dateJoined
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+  resources: &defaultResources
+    Resources:
+      <<: *defaultTables
+    Outputs:
+      <<: *defaultHosts

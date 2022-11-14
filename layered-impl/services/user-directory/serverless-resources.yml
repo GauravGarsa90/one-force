@@ -1,0 +1,133 @@
+
+default: &default
+  apiGatewayResponses: &defaultApiGatewayResponses
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          'Ref': ApiGatewayRestApi
+
+  iamRoles: &defaultIamRoles
+    userDirectoryServiceDefaultRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: userDirectoryServiceDefaultRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: /services/${self:service}/default/
+    userDirectoryServiceWriteRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: userDirectoryServiceWriteRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: /services/${self:service}/write/
+    userDirectoryServiceReadRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: userDirectoryServiceReadRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Path: /services/${self:service}/read/
+
+  iamPolicies: &defaultIamPolicies
+    serverlessDeployPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: ServerlessDeployPolicy
+        Roles:
+          - 'Ref': userDirectoryServiceDefaultRole
+          - 'Ref': userDirectoryServiceWriteRole
+          - 'Ref': userDirectoryServiceReadRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - 'Fn::Join':
+                  - ':'
+                  - - 'arn:aws:logs'
+                    - 'Ref': 'AWS::Region'
+                    - 'Ref': 'AWS::AccountId'
+                    - 'log-group:/aws/lambda/*:*:*'
+    userDirectoryTableWritePolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: userDirectoryTableWritePolicy
+        Roles:
+          - 'Ref': userDirectoryServiceReadRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+              Resource:
+                - 'Fn::Join':
+                  - ':'
+                  - - 'arn:aws:dynamodb'
+                    - 'Ref': 'AWS::Region'
+                    - 'Ref': 'AWS::AccountId'
+                    - 'table/${self:custom.environment.USER_DIRECTORY_TABLE}'
+                - 'Fn::Join':
+                  - ':'
+                  - - 'arn:aws:dynamodb'
+                    - 'Ref': 'AWS::Region'
+                    - 'Ref': 'AWS::AccountId'
+                    - 'table/${self:custom.environment.USER_DIRECTORY_TABLE}/index/*'
+
+  hosts: &defaultHosts
+    userDirectoryApiGatewayHost:
+      Value:
+        'Fn::Join':
+          - '.'
+          - - 'Ref': ApiGatewayRestApi
+            - 'execute-api'
+            - 'Ref': 'AWS::Region'
+            - 'amazonaws.com'
+      Export:
+        Name: userDirectoryApiGatewayHost
+
+  resources: &defaultResources
+    Resources:
+      <<: *defaultApiGatewayResponses
+      <<: *defaultIamRoles
+      <<: *defaultIamPolicies
+    Outputs:
+      <<: *defaultHosts
+
