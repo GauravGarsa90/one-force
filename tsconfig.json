@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs"
+    "module": "commonjs",
+    "outDir": "lib",
+    "noEmitOnError": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "layered-impl"
   ],
+  "include": ["src/**/*"],
   "types": [
     "node",
     "aws-sdk"

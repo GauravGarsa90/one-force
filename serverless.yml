@@ -22,7 +22,7 @@ provider:
           Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
   list:
-    handler: controllers/list.list
+    handler: lib/controllers/list.list
     events:
       - http:
           path: userDirectory
@@ -30,7 +30,7 @@ provider:
           cors: true
         
   get:
-    handler: controllers/get.get
+    handler: lib/controllers/get.get
     events:
       - http:
           path: userDirectory/{id}
