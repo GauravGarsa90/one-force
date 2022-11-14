@@ -14,4 +14,4 @@ custom:
     ${file(./serverless-resources.yml)}
 
 resources:
-  ${self:custom.resources.${self:provider.stage}.resources}
+  ${self:custom.resources.default.resources}

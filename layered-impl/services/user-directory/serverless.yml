@@ -1,4 +1,4 @@
-service: s3-uploader
+service: user-directory
 
 provider:
   name: aws
@@ -20,26 +20,26 @@ custom:
     ${file(./serverless-resources.yml)}
 
 functions:
-  upload:
-    handler: handler.upload
-    role: userDirectoryServiceWriteRole
-    events:
-      - http:
-          path: api/${self:service}/
-          method: post
-          cors: ${self:custom.cors.${self:provider.stage}}
-          private: false
-    layers:
-      -  ${self:custom.layers.${self:provider.stage}.libs}
-  ingest:
-    handler: ingest.ingest
+  getOne:
+    handler: handler.getOne
     role: userDirectoryServiceReadRole
     events:
-      - s3:
-          bucket: ${self:custom.environment.DATA_BUCKET}
-          event: s3:ObjectCreated:*
+      - http:
+          path: userDirectory/{id}
+          method: get
+          cors: true
     layers:
-      -  ${self:custom.layers.${self:provider.stage}.libs}
+      -  ${self:custom.layers.default.libs}
+  ingest:
+    handler: handler.list
+    role: userDirectoryServiceReadRole
+    events:
+      - http:
+          path: userDirectory
+          method: get
+          cors: true
+    layers:
+      -  ${self:custom.layers.default.libs}
 
 resources:
-  ${self:custom.resources.${self:provider.stage}.resources}
+  ${self:custom.resources.default.resources}

@@ -7,7 +7,7 @@ default: &default
     userDirectory:
       Type: AWS::DynamoDB::Table
         Properties:
-        TableName: ${self:custom.environment.${self:provider.stage}.USER_DIRECTORY_TABLE}
+        TableName: ${self:custom.environment.default.USER_DIRECTORY_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: N

@@ -26,20 +26,6 @@ default: &default
               Action:
                 - sts:AssumeRole
         Path: /services/${self:service}/default/
-    userDirectoryServiceWriteRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: userDirectoryServiceWriteRole
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - lambda.amazonaws.com
-              Action:
-                - sts:AssumeRole
-        Path: /services/${self:service}/write/
     userDirectoryServiceReadRole:
       Type: AWS::IAM::Role
       Properties:
@@ -62,7 +48,6 @@ default: &default
         PolicyName: ServerlessDeployPolicy
         Roles:
           - 'Ref': userDirectoryServiceDefaultRole
-          - 'Ref': userDirectoryServiceWriteRole
           - 'Ref': userDirectoryServiceReadRole
         PolicyDocument:
           Version: '2012-10-17'
@@ -79,10 +64,10 @@ default: &default
                     - 'Ref': 'AWS::Region'
                     - 'Ref': 'AWS::AccountId'
                     - 'log-group:/aws/lambda/*:*:*'
-    userDirectoryTableWritePolicy:
+    userDirectoryTableReadPolicy:
       Type: AWS::IAM::Policy
       Properties:
-        PolicyName: userDirectoryTableWritePolicy
+        PolicyName: userDirectoryTableReadPolicy
         Roles:
           - 'Ref': userDirectoryServiceReadRole
         PolicyDocument:
@@ -90,13 +75,8 @@ default: &default
           Statement:
             - Effect: Allow
               Action:
-                - dynamodb:DescribeTable
-                - dynamodb:Query
                 - dynamodb:Scan
                 - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                - dynamodb:DeleteItem
               Resource:
                 - 'Fn::Join':
                   - ':'
